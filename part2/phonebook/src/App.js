@@ -4,6 +4,7 @@ import NewPersonForm from './components/NewPersonForm.js'
 import FilteredList from './components/FilteredList.js'
 import NameFilter from './components/NameFilter.js'
 import personService from './services/persons.js'
+import Notification from './components/Notification.js'
 
 const Header = (props) => {
   const {title} = props;
@@ -12,6 +13,10 @@ const Header = (props) => {
 
 const App = () => {
   const [persons, setPersons] = useState([]) 
+  const [newName, setNewName] = useState('')
+  const [newNumber, setNewNumber] = useState('')
+  const [filter, setFilter] = useState('')
+  const [errorMessage, setErrorMessage] = useState(null)
 
   useEffect(() => {
     axios
@@ -19,11 +24,7 @@ const App = () => {
       .then(response => {
         setPersons(persons.concat(response.data))
       })
-  }, [])
-
-  const [newName, setNewName] = useState('')
-  const [newNumber, setNewNumber] = useState('')
-  const [filter, setFilter] = useState('')
+  }, []) 
 
   const filteredPeople = persons.filter(person => person.name.toLowerCase().includes(filter.toLowerCase()))
 
@@ -46,6 +47,16 @@ const App = () => {
             setPersons(persons.map(person => person.id !== updatedPerson.id ? person : returnedPerson))
             setNewName('')
             setNewNumber('')
+            setErrorMessage(`Updated ${returnedPerson.name}`)
+            setTimeout(() => {
+              setErrorMessage(null)
+            }, 5000)
+          })
+          .catch(error => {
+            setErrorMessage(`Information of ${updatedPerson.name} has already been removed from server`)
+            setTimeout(() => {
+              setErrorMessage(null)
+            }, 5000)
           })
       }
     } else { //new name to add 
@@ -59,6 +70,10 @@ const App = () => {
           setPersons(persons.concat(returnedPerson))
           setNewName('')
           setNewNumber('')
+          setErrorMessage(`Added ${returnedPerson.name}`)
+          setTimeout(() => {
+            setErrorMessage(null)
+          }, 5000)
         })
     }
     
@@ -67,12 +82,20 @@ const App = () => {
   const deletePerson = (id) => {
     personService
       .removePerson(id)
+      .catch(error => {
+        setErrorMessage(`This person has already been removed from server`)
+        setTimeout(() => {
+          setErrorMessage(null)
+        }, 5000)
+      })
+    setErrorMessage(`Successfully deleted contact`)
     setPersons(persons.filter(person => person.id !== id))
   }
 
   return (
     <div>
       <Header title="Phonebook"/>
+      <Notification message={errorMessage}/>
       <NameFilter 
         filter={filter} 
         setFilter={setFilter}
