@@ -19,10 +19,10 @@ const App = () => {
   const [errorMessage, setErrorMessage] = useState(null)
 
   useEffect(() => {
-    axios
-      .get('http://localhost:3001/persons')
-      .then(response => {
-        setPersons(persons.concat(response.data))
+    personService
+      .getAll()
+      .then(personsToAdd => {
+        setPersons(persons.concat(personsToAdd))
       })
   }, []) 
 
