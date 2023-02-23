@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react'
-import axios from 'axios'
 import NewPersonForm from './components/NewPersonForm.js'
 import FilteredList from './components/FilteredList.js'
 import NameFilter from './components/NameFilter.js'
@@ -53,7 +52,7 @@ const App = () => {
             }, 5000)
           })
           .catch(error => {
-            setErrorMessage(`Information of ${updatedPerson.name} has already been removed from server`)
+            setErrorMessage(`${error.response.data.error}`)
             setTimeout(() => {
               setErrorMessage(null)
             }, 5000)
@@ -75,6 +74,13 @@ const App = () => {
             setErrorMessage(null)
           }, 5000)
         })
+        .catch(error => {
+          console.log(error)
+          setErrorMessage(`${error.response.data.error}`)
+          setTimeout(() => {
+            setErrorMessage(null)
+          }, 5000)
+        })
     }
     
   }
@@ -89,6 +95,9 @@ const App = () => {
         }, 5000)
       })
     setErrorMessage(`Successfully deleted contact`)
+    setTimeout(() => {
+      setErrorMessage(null)
+    }, 5000)
     setPersons(persons.filter(person => person.id !== id))
   }
 
