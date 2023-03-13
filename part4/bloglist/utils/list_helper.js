@@ -8,9 +8,9 @@ const favoriteBlog = (blogs) => blogs.reduce((max, blog) => max.likes > blog.lik
 
 const mostBlogs = (blogList) => {
   const [author, blogs] = _(blogList)
-    .countBy((blog) => blog.author)
-    .toPairs()
-    .maxBy(1)
+    .countBy((blog) => blog.author) //groups all the authors together and gets their frequencies
+    .toPairs() //convert to an array
+    .maxBy(1) //get the max of the array by the 2nd value ([key, value])
   
   return { author, blogs }   
     
